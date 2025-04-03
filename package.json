@@ -1,0 +1,198 @@
+{
+    "name": "memoryview",
+    "displayName": "MemoryView",
+    "preview": true,
+    "description": "Provide memory views for debuggers",
+    "version": "1.0.1",
+    "publisher": "ByteSchool",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/SiamAbdullah/MemoryView"
+    },
+    "bugs": {
+        "url": "https://github.com/SiamAbdullah/MemoryView/issues"
+    },
+    "engines": {
+        "vscode": "^1.90.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "icon": "icon.png",
+    "galleryBanner": {
+        "color": "#07155c",
+        "theme": "dark"
+    },
+    "keywords": [
+        "cortex-debug",
+        "cppdbg",
+        "embedded",
+        "memory",
+        "cortex",
+        "hex",
+        "lldb",
+        "lldb-dap",
+        "cppvsdbg"
+    ],
+    "activationEvents": [
+        "onDebugResolve:cortex-debug",
+        "onDebugResolve:cppdbg",
+        "onDebugResolve:cppvsdbg",
+        "onDebugResolve:lldb-dap",
+        "onDebugResolve:cspy",
+        "onCommand:cu-debug.memoryview.uriTest",
+        "onWebviewPanel:memoryview.memoryView",
+        "onUri"
+    ],
+    "extensionKind": [
+        "workspace"
+    ],
+    "main": "./dist/extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "category": "MemoryView",
+                "command": "Debugger.memoryview.hello",
+                "title": "Testing: Force 'memoryview' extension to load"
+            },
+            {
+                "category": "MemoryView",
+                "command": "Debugger.memoryview.toggleMemoryView",
+                "title": "Toggle Debugger Memory View Panel/Webview"
+            },
+            {
+                "category": "MemoryView",
+                "command": "Debugger.memoryview.addMemoryView",
+                "title": "Add new memory view (for debugger)"
+            },
+            {
+                "category": "MemoryView",
+                "command": "Debugger.memoryview.uriTest",
+                "title": "Test URI opening mechanism"
+            }
+        ],
+        "customEditors": [
+            {
+                "viewType": "memoryview.memoryView",
+                "displayName": "Memory Viewer",
+                "selector": [
+                    {
+                        "filenamePattern": "*.memoryview"
+                    }
+                ],
+                "priority": "option"
+            }
+        ],
+        "viewsContainers": {
+            "panel": [
+                {
+                    "icon": "",
+                    "id": "memoryview",
+                    "title": "MEMORY"
+                }
+            ]
+        },
+        "views": {
+            "memoryview": [
+                {
+                    "id": "memoryview.memoryView",
+                    "type": "webview",
+                    "name": "MEMORY",
+                    "when": "memoryview:showMemoryPanel && memoryview:memoryPanelLocation == panel"
+                }
+            ]
+        },
+        "configuration": {
+            "type": "object",
+            "title": "MemoryView",
+            "properties": {
+                "memoryview.showMemoryPanel": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Show MEMORY memory panel"
+                },
+                "memoryview.memoryViewLocation": {
+                    "type": "string",
+                    "enum": [
+                        "panel",
+                        "editor"
+                    ],
+                    "default": "panel",
+                    "description": "Only 'panel' has been implemented. `editor` shows memory views in the Editors area. Default is in the Panels area along with the `Debug Console`"
+                },
+                "memoryview.trackDebuggers": {
+                    "type": "array",
+                    "items": "string",
+                    "default": [],
+                    "description": "List (array) of additional debuggers to track besides the default ones. Reload of window required"
+                },
+                "memoryview.tracking.duplicateDebuggerMemoryViews": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Track creation of new memory windows and duplicate it as a memore-view. VSCode uses their HexEditor and we provide an alternative. You may see a prompt by VSCode (not us) to allow our view to be created. If you trust our extension, you can enable the `trackDebuggerMemoryViewsSilent` setting so, you will not see this prompt"
+                },
+                "memoryview.tracking.duplicateDebuggerMemoryViewsSilently": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Track creation of new memory windows and duplicate it as a memore-view. VSCode uses their HexEditor and we provide an alternative. This will happen silently and faster"
+                },
+                "memoryview.tracking.closeHexEditorAfterDuplicating": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "This will auto-close the default VSCode HexEditor view after duplicating it as a a memory view with this extension. Warning: In rare cases, it may close the wrong window"
+                }
+            }
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -noEmit && node .esbuild.config.js --analyze",
+        "lint": "eslint src --ext ts",
+        "watch": "node .esbuild.config.js --watch --analyze",
+        "test": "node ./src/test/runTest.js",
+        "package": "node ./release.js --package",
+        "publish": "node ./release.js --publish --vsx-also"
+    },
+    "devDependencies": {
+        "@faker-js/faker": "^7.4.0",
+        "@types/glob": "^7.2.0",
+        "@types/mocha": "^9.1.1",
+        "@types/node": "16.x",
+        "@types/react": "^17.0.38",
+        "@types/react-dom": "^17.0.11",
+        "@types/react-virtualized": "^9.21.21",
+        "@types/react-virtualized-auto-sizer": "^1.0.1",
+        "@types/react-window": "^1.8.5",
+        "@types/react-window-infinite-loader": "^1.0.6",
+        "@types/vscode": "^1.75.0",
+        "@typescript-eslint/eslint-plugin": "^5.31.0",
+        "@typescript-eslint/parser": "^5.31.0",
+        "@vscode/test-electron": "^2.1.5",
+        "esbuild": "^0.25.1",
+        "eslint": "^8.20.0",
+        "glob": "^8.0.3",
+        "mocha": "^10.0.0",
+        "prettier": "2.7.1",
+        "ts-loader": "^9.3.1",
+        "typescript": "^4.7.4",
+        "vscode-webview-tools": "^0.1.1"
+    },
+    "dependencies": {
+        "@popperjs/core": "^2.11.6",
+        "@vscode/codicons": "^0.0.32",
+        "@vscode/debugprotocol": "^1.56.1",
+        "@vscode/extension-telemetry": "0.5.2",
+        "@vscode/webview-ui-toolkit": "^1.0.0",
+        "buffer": "^6.0.3",
+        "clsx": "^1.2.1",
+        "events": "^3.3.0",
+        "react": "^17.0.2",
+        "react-dom": "^17.0.2",
+        "react-popper": "^2.3.0",
+        "react-window": "^1.8.7",
+        "react-window-infinite-loader": "^1.0.8",
+        "recoil": "^0.5.2",
+        "uuidv4": "^6.2.13"
+    },
+    "extensionDependencies": []
+}

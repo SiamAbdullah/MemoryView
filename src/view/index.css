@@ -1,0 +1,234 @@
+#root {
+    overflow-x: hidden;
+    overflow-y: visible;
+    flex: 1;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    min-height: 100%;
+    overflow: hidden;
+}
+
+.hex-cell {
+    border: 1px;
+    border-color: coral;
+    margin: 0px;
+    text-align: center; /* Vertical alignment */
+    justify-content: center; /* Horizontal alignment */
+    white-space: pre;
+    font-family: var(--vscode-editor-font-family);
+    font-weight: var(--vscode-editor-font-weight);
+    font-size: var(--vscode-editor-font-size);
+    display: inline-flex;
+    overflow-y: hidden;
+    line-height: 2.5ch;
+}
+
+.selected-cell {
+    background: var(--vscode-editor-selectionBackground);
+    color: var(--vscode-editor-selectionForeground);
+}
+
+.hex-cell-value-header {
+    color: var(--vscode-symbolIcon-classForeground);
+    font-weight: bold;
+    /* display: flex; */
+    width: 3ch;
+}
+
+.hex-cell-value-header4 {
+    width: 10ch;
+}
+
+.hex-cell-value-header8 {
+    width: 18ch;
+}
+
+.hex-cell-value {
+    user-select: text;
+    /* cursor: pointer;*/
+    font-weight: bold;
+    width: 3ch;
+}
+
+.hex-cell-value4 {
+    width: 10ch;
+}
+
+.hex-cell-value8 {
+    width: 18ch;
+}
+
+.hex-cell-char-header {
+    color: var(--vscode-symbolIcon-classForeground);
+    font-weight: bold;
+    /* display: flex; */
+    width: 3ch;
+}
+
+.hex-cell-header-start {
+    border: 1px;
+    border-color: var(--vscode-symbolIcon-classForeground);
+}
+
+.hex-cell-char {
+    color: var(--vscode-textLink-activeForeground);
+    background-color: var(--vscode-textBlockQuote-background);
+    overflow: hidden;
+    width: 3ch;
+}
+
+.selected-char {
+    background: var(--vscode-editor-selectionBackground);
+    color: var(--vscode-editor-selectionForeground);
+}
+
+.hex-header-row {
+    display: flex;
+    font-weight: bold;
+    white-space: pre;
+    width: min-content;
+}
+
+.sticky {
+    position: sticky !important;
+    position: -webkit-sticky !important;
+    z-index: 2;
+    background-color: blue;
+}
+
+.hex-data-row {
+    display: flex;
+    font-weight: bold;
+    white-space: pre;
+    width: min-content;
+}
+
+/* Normally, the infinite-scroller List component sets the width to be 100%. That is not right for us.
+ * We should follow the size of the content instead. There are two nested divs
+ */
+.infinite-list div {
+    width: min-content;
+}
+.infinite-list div {
+    width: min-content;
+}
+
+.hex-cell-address {
+    color: var(--vscode-editorLineNumber-activeForeground);
+    width: 18ch;
+    cursor: pointer;
+}
+
+.header-cell-address {
+    color: var(--vscode-symbolIcon-classForeground);
+    font-weight: bold;
+}
+
+.hex-cell-invisible {
+    visibility: hidden;
+}
+
+.hex-cell-value-dirty {
+    color: var(--vscode-editorWarning-foreground);
+    font-weight: lighter;
+}
+
+.hex-cell-value-changed {
+    background-color: var(--vscode-button-background);
+    color: var(--vscode-button-foreground);
+}
+
+.hex-cell-char-changed {
+    background-color: var(--vscode-button-background);
+    color: var(--vscode-button-foreground);
+}
+
+.popup {
+    position: fixed;
+    background-color: var(--vscode-sideBar-background);
+    align-items: left;
+    padding: 6px;
+    z-index: 1000;
+    border-width: 1px;
+    border-color: var(--vscode-sideBar-border);
+}
+
+.popup-background {
+    /* modal background fixed across whole screen */
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    /* semi-transparent bg  */
+    background-color: var(--vscode-editor-background);
+    opacity: 0.6;
+
+    /* z-index must be below .popup and above everything else  */
+    z-index: 900;
+}
+
+/*****************************************************/
+
+.container {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    width: 100%;
+}
+
+.table-row-xxx {
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.ReactVirtualized__Table__headerRow {
+    border: 0;
+    color: #ff0;
+}
+
+.debug-status {
+    text-align: center;
+    justify-content: left; /* Horizontal alignment */
+    vertical-align: sub;
+    padding-left: 10px;
+}
+
+.radio-label {
+    align-items: baseline;
+    padding-top: 4px;
+    padding-right: 4px;
+}
+
+.dropdown-label-div {
+    margin-top: 10px;
+    display: inline-flex;
+    width: 50%;
+}
+
+.dropdown-label {
+    vertical-align: bottom;
+    margin-top: 4px;
+    margin-right: 1ch;
+}
+
+	
+.tooltip {
+    background: var(--vscode-textBlockQuote-background);
+    font-family: var(--vscode-editor-font-family);
+    color: var(--vscode-textLink-activeForeground);
+    border: 1px solid var(--vscode-sideBar-border);
+    border-radius: 4px;
+    padding: 5px 10px;
+    position: absolute;
+    font-size: 14px;
+    left: 100px;
+    top: -20px;
+    z-index: 100;
+  }
