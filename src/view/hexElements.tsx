@@ -4,6 +4,7 @@ import { DualViewDoc, DummyByte, IDualViewDocGlobalEventArg } from '../extension
 import { IMemValue, UnknownDocId } from '../extension/shared';
 import { hexFmt64, hexFmt64 as _hexFmt64 } from '../extension/utils';
 import { SelContext } from '../extension/selection';
+import { hexValuesLookup } from './shared';
 
 export type OnCellChangeFunc = (address: bigint, val: number) => void;
 export type OnSelChangedFunc = (address: bigint) => void;
@@ -26,6 +27,7 @@ interface IHexCell {
 interface IHexCellState {
     frozen: boolean;
 }
+
 export class HexCellValue extends React.Component<IHexCell, IHexCellState> {
     private static currentDOMElt: HTMLSpanElement | undefined = undefined; // createRef not working on span element
     private static lastOrigValue = '';
@@ -259,24 +261,23 @@ export const HexCellAddress: React.FC<{ address: bigint; cls?: string }> = ({ ad
     const copyToClipboard = (text: string) => {
         let value = text.trim();
         if (!value.startsWith('0x')) {
-          value = '0x' + value;
+            value = '0x' + value;
         }
-    
-        void navigator.clipboard.writeText(value).then(() => {
-          setCopied(true);
-          setTimeout(() => {
-            setCopied(false);
-          }, 1000); // reset copied state after 1 seconds
-        });
-      };
 
+        void navigator.clipboard.writeText(value).then(() => {
+            setCopied(true);
+            setTimeout(() => {
+                setCopied(false);
+            }, 1000); // reset copied state after 1 seconds
+        });
+    };
 
     return (
         <div>
-        <span data-tooltip className={classNames} onClick={() => copyToClipboard(valueStr)}>
-            {valueStr}
-        </span>
-        {copied && <span className="tooltip">Copied!</span>}
+            <span data-tooltip className={classNames} onClick={() => copyToClipboard(valueStr)}>
+                {valueStr}
+            </span>
+            {copied && <span className='tooltip'>Copied!</span>}
         </div>
     );
 };
@@ -572,55 +573,4 @@ export interface IHexCellEditProps {
 export interface IHexCellEditState {
     isOpen: boolean;
     value: string;
-}
-
-const odStyleChars = [
-    'nul',
-    'soh',
-    'stx',
-    'etx',
-    'eot',
-    'enq',
-    'ack',
-    'bel',
-    'bs',
-    'ht',
-    'nl',
-    'vt',
-    'ff',
-    'cr',
-    'so',
-    'si',
-    'dle',
-    'dc1',
-    'dc2',
-    'dc3',
-    'dc4',
-    'nak',
-    'syn',
-    'etb',
-    'can',
-    'em',
-    'sub',
-    'esc',
-    'fs',
-    'gs',
-    'rs',
-    'us',
-    'sp'
-];
-
-const charCodesLookup: string[] = [];
-const hexValuesLookup: string[] = [];
-for (let byte = 0; byte <= 255; byte++) {
-    const v =
-        byte < 32
-            ? odStyleChars[byte]
-            : byte === 127
-            ? 'del'
-            : byte > 127 && byte <= 159
-            ? '.'
-            : String.fromCharCode(byte);
-    charCodesLookup.push(v);
-    hexValuesLookup.push(byte.toString(16).padStart(2, '0'));
 }
