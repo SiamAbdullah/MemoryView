@@ -4,19 +4,13 @@ import { DualViewDoc, DummyByte, IDualViewDocGlobalEventArg } from '../extension
 import { IMemValue, UnknownDocId } from '../extension/shared';
 import { hexFmt64, hexFmt64 as _hexFmt64 } from '../extension/utils';
 import { SelContext } from '../extension/selection';
-import { hexValuesLookup } from './shared';
+import { hexValuesLookup, IMemValue32or64 } from './shared';
+import { HexCellChar, HexCellAddress, HexCellEmpty } from './hexCell';
 
 export type OnCellChangeFunc = (address: bigint, val: number) => void;
 export type OnSelChangedFunc = (address: bigint) => void;
 export type CellInfoType = IMemValue | IMemValue32or64;
 
-interface IMemValue32or64 {
-    cur: bigint;
-    orig: bigint;
-    changed: boolean;
-    stale: boolean;
-    invalid: boolean;
-}
 interface IHexCell {
     bytesPerCell: number;
     address: bigint;
@@ -250,125 +244,6 @@ export class HexCellValue extends React.Component<IHexCell, IHexCellState> {
             </span>
         );
     }
-}
-
-export const HexCellAddress: React.FC<{ address: bigint; cls?: string }> = ({ address, cls }) => {
-    const [copied, setCopied] = React.useState(false);
-    const classNames = 'hex-cell hex-cell-address ' + cls;
-    const valueStr = address.toString(16).padStart(16, '0').padEnd(18, ' ');
-    // const id = `hex-cell-address-${address}`;
-
-    const copyToClipboard = (text: string) => {
-        let value = text.trim();
-        if (!value.startsWith('0x')) {
-            value = '0x' + value;
-        }
-
-        void navigator.clipboard.writeText(value).then(() => {
-            setCopied(true);
-            setTimeout(() => {
-                setCopied(false);
-            }, 1000); // reset copied state after 1 seconds
-        });
-    };
-
-    return (
-        <div>
-            <span data-tooltip className={classNames} onClick={() => copyToClipboard(valueStr)}>
-                {valueStr}
-            </span>
-            {copied && <span className='tooltip'>Copied!</span>}
-        </div>
-    );
-};
-
-export const HexCellChar: React.FunctionComponent<{
-    address: bigint;
-    byteInfo: IMemValue;
-}> = ({ address, byteInfo }) => {
-    const val = byteInfo.cur;
-    const origVal = byteInfo.orig;
-    const valueStr = val >= 0 ? charCodesLookup[val] : '~~';
-    let classNames = 'hex-cell hex-cell-char' + (val !== origVal || byteInfo.changed ? ' hex-cell-char-changed' : '');
-    if (SelContext.isSelected(address)) {
-        classNames += ' selected-char';
-    }
-    return <span className={classNames}>{valueStr}</span>;
-};
-
-export const HexCellEmpty: React.FunctionComponent<{
-    length: number;
-    fillChar?: string;
-    cls?: string;
-}> = ({ length = 1, fillChar = ' ', cls = '' }) => {
-    const classNames = 'hex-cell ' + cls;
-    const valueStr = fillChar.repeat(length);
-    return <span className={classNames}>{valueStr}</span>;
-};
-
-export const HexCellEmptyHeader: React.FunctionComponent<{
-    length?: number;
-    fillChar?: string;
-    cls?: string;
-}> = ({ length = 1, fillChar = ' ', cls = '' }) => {
-    const classNames = `hex-cell hex-cell-char-header ${cls}`;
-    const valueStr = fillChar.repeat(length);
-    return <span className={classNames}>{valueStr}</span>;
-};
-
-export const HexCellValueHeader: React.FunctionComponent<{
-    value: number;
-    bytesPerCell: number;
-}> = ({ value, bytesPerCell }) => {
-    const classNames = `hex-cell hex-cell-value-header hex-cell-value-header${bytesPerCell} `;
-    let valueStr = hexValuesLookup[(value >>> 0) & 0xff];
-    if (bytesPerCell !== 1) {
-        if (DualViewDoc.currentDoc?.endian === 'big') {
-            valueStr = valueStr + '-' + hexValuesLookup[((value + bytesPerCell - 1) >>> 0) & 0xff];
-        } else {
-            valueStr = hexValuesLookup[((value + bytesPerCell - 1) >>> 0) & 0xff] + '-' + valueStr;
-        }
-    }
-    return <span className={classNames}>{valueStr}</span>;
-};
-
-export interface IHexHeaderRow {
-    style?: any;
-    cls?: string;
-}
-
-export function HexHeaderRow(props: IHexHeaderRow): JSX.Element {
-    const fmt = DualViewDoc.currentDoc?.format;
-    const bytesPerCell = fmt === '1-byte' ? 1 : fmt === '4-byte' ? 4 : 8;
-    const classNames = `hex-header-row scrollHorizontalSync ${props.cls || ''}`;
-    const addrCells: JSX.Element[] = [];
-    const bytesInRow = bytesPerCell === 1 ? 16 : 32;
-
-    let key = 2;
-    for (let ix = 0; ix < bytesInRow; ix += bytesPerCell) {
-        addrCells.push(<HexCellValueHeader key={key++} value={ix % bytesInRow} bytesPerCell={bytesPerCell} />);
-    }
-    const decodedTextCells: JSX.Element[] = [];
-    if (bytesPerCell === 1) {
-        const tmp = 'Decoded Bytes'.padEnd(16, ' ');
-        let decodedText = '';
-        for (let ix = 0; ix < bytesInRow; ix += 16) {
-            decodedText += tmp;
-        }
-        const asList = decodedText.split('');
-        for (let ix = 0; ix < bytesInRow; ix++) {
-            const v = asList[ix];
-            decodedTextCells.push(<HexCellEmptyHeader key={key++} fillChar={v} />);
-        }
-    }
-    return (
-        <div className={classNames} style={props.style || {}}>
-            <HexCellAddress key={100} cls='header-cell-address' address={DualViewDoc.currentDoc?.startAddress ?? 0n} />
-            {addrCells}
-            <HexCellEmpty key={101} length={1} fillChar='.' cls='hex-cell-invisible' />
-            {decodedTextCells}
-        </div>
-    );
 }
 
 export interface IHexDataRow {

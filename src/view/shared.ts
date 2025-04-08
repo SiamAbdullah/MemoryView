@@ -1,3 +1,11 @@
+export interface IMemValue32or64 {
+    cur: bigint;
+    orig: bigint;
+    changed: boolean;
+    stale: boolean;
+    invalid: boolean;
+}
+
 const odStyleChars = [
     'nul',
     'soh',
