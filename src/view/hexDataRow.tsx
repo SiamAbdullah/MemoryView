@@ -233,7 +233,7 @@ export class HexCellValue extends React.Component<IHexCell, IHexCellState> {
             <span
                 tabIndex={0}
                 suppressContentEditableWarning={true}
-                contentEditable={true}
+                contentEditable={this.editable()}
                 className={this.classNames()}
                 onFocus={this.onFocusFunc}
                 onBlur={this.onBlurFunc}
