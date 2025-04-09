@@ -2,7 +2,7 @@ import React from 'react';
 import AutoSizer from '../../import/auto-sizer';
 import InfiniteLoader = require('react-window-infinite-loader');
 import { FixedSizeList as List, ListOnScrollProps } from 'react-window';
-import { IHexDataRow, HexDataRow, OnCellChangeFunc } from './hexElements';
+import { IHexDataRow, HexDataRow, OnCellChangeFunc } from './hexDataRow';
 import { DualViewDoc, IDualViewDocGlobalEventArg } from '../extension/dualViewDoc';
 import { vscodeGetState, vscodeSetState } from '../extension/webviewGlobals';
 import { UnknownDocId } from '../extension/shared';
