@@ -19,12 +19,15 @@ import {
     ICmdGetStartAddress,
     ICmdButtonClick,
     ICmdSettingsChanged,
-    UnknownDocId
+    UnknownDocId,
+    IModifiableProps,
+    RowFormatType,
+    EndianType
 } from './shared';
 import { DebuggerTrackerLocal, ITrackedDebugSession } from './debugTracker';
 import { DebugProtocol } from '@vscode/debugprotocol';
 import { DebugSessionStatus } from '../debugTracker/exports';
-import { hexFmt64 } from './utils';
+import { hexFmt64, getNonce } from './utils';
 
 const KNOWN_SCHMES = {
     FILE: 'file', // Only for testing
@@ -499,6 +502,21 @@ export class MemViewPanelProvider implements vscode.WebviewViewProvider, vscode.
         }
     }
 
+    // Update the current memory view settings from right click
+    public updateCurrentMemoryViewSettings(dataFormat?: RowFormatType, endianType?: EndianType) {
+        const settings = {
+            format: dataFormat ?? DualViewDoc.currentDoc?.format,
+            endian: endianType ?? DualViewDoc.currentDoc?.endian,
+            expr: DualViewDoc.currentDoc?.expr,
+            displayName: DualViewDoc.currentDoc?.displayName
+        } as IModifiableProps;
+
+        if (DualViewDoc.currentDoc) {
+            DualViewDoc.currentDoc.updateSettings(settings);
+            this.updateHtmlForInit();
+        }
+    }
+
     private handleMessage(msg: any) {
         // console.log('MemViewPanelProvider.onDidReceiveMessage', msg);
         switch (msg?.type) {
@@ -923,15 +941,6 @@ function debugConsoleMessage(e: any, arg: ICmdGetMemory) {
         const msg = e instanceof Error ? e.message : e ? e.toString() : 'Unknown error';
         con.appendLine(`Memview: Failed to read memory @ ${arg.addr}. ` + msg);
     }
-}
-
-function getNonce() {
-    let text = '';
-    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    for (let i = 0; i < 32; i++) {
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
-    return text;
 }
 
 export function getUri(webview: vscode.Webview, extensionUri: vscode.Uri, pathList: string[]) {

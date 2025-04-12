@@ -1,8 +1,7 @@
-
 export class Timekeeper {
     private start = Date.now();
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    constructor(public resetOnQuery = false) { }
+    constructor(public resetOnQuery = false) {}
 
     public deltaMs(): number {
         const now = Date.now();
@@ -25,4 +24,13 @@ export function bigIntMin(a: bigint, b: bigint) {
 
 export function bigIntMax(a: bigint, b: bigint) {
     return a > b ? a : b;
+}
+
+export function getNonce() {
+    let text = '';
+    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    for (let i = 0; i < 32; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
 }

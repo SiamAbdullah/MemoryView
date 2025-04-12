@@ -329,7 +329,11 @@ export class HexTableVirtual2 extends React.Component<IHexTableVirtual, IHexTabl
                 `In HexTableView2.render(), rowHeight=${this.state.rowHeight}, toolbarHeight=${this.state.toolbarHeight} scrollTop=${this.state.scrollTop}`
             );
         return (
-            <div className='container' style={{ overflowX: 'visible' }}>
+            <div
+                className='container'
+                style={{ overflowX: 'visible' }}
+                data-vscode-context='{"webviewSection": "memorywebview_panel", "mouseCount": 4, "preventDefaultContextMenuItems": true}'
+            >
                 {/*<HexHeaderRow></HexHeaderRow>*/}
                 <InfiniteLoader
                     isItemLoaded={this.isItemLoadedFunc}

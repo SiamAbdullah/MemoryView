@@ -4,6 +4,7 @@ import querystring from 'node:querystring';
 import { DebugTrackerFactory } from './extension/debugTracker';
 import { DebugTracker } from './debugTracker/exports';
 import { /*MemviewDocumentProvider, */ MemViewPanelProvider } from './extension/memviewDocument';
+import { registerCommands } from './extension/commmandRegistration';
 
 /**
  * It is best to add a new memory view when a debug session is active and in stopped
@@ -92,10 +93,14 @@ export class MemViewExtension {
         const debugTracker = new DebugTracker(context);
         this.tracker = DebugTrackerFactory.register(context, debugTracker);
         // MemviewDocumentProvider.register(context);
+
+        // intialize the memory view panel provider. MemViewPanelProvider.Provider
         MemViewPanelProvider.register(context);
 
         this.setContexts();
 
+        //
+        registerCommands(context, MemViewPanelProvider.Provider);
         context.subscriptions.push(
             vscode.commands.registerCommand('Debugger.memoryview.toggleMemoryView', this.toggleMemoryView.bind(this)),
             vscode.commands.registerCommand('Debugger.memoryview.uriTest', () => {
