@@ -2,6 +2,42 @@ import { IMemPages } from './dualViewDoc';
 
 export const UnknownDocId = 'Unknown';
 
+export interface MemviewUriOptions {
+    /**
+     * `memoryReference` is what a debug adapter provides. It is an opaque string representing a location in memory.
+     * If this exists, we use it if the there is no `expr`, or if you have an `expr` as a fallback memory location.
+     * This is generally provided by automated tools and not something to be manually entered.
+     */
+    memoryReference?: string;
+
+    /**
+     * `expr` can be a constant memory address or an expression resulting in an address by debugger using evaluate().
+     * URI path is used if no expr is specified
+     */
+    expr?: string;
+
+    /**
+     * We try to derive most of the following if not specified. If sessionId is specified, it should
+     * be a currently running debugger (may not be active session). When we can't match the active
+     * debug session with what the sessionId given, we may defer to until later.
+     */
+    sessionId?: string | 'current'; // Undefined also means 'current' if there is an active session
+
+    /** If not supplied, use expr or the URI path */
+    displayName?: string;
+
+    /**
+     * Following to can be used for better matching of an inactive memory view with a later active
+     * debug session. Unfortunately, that only works when the debugger starts a new session
+     */
+
+    /** Session name for better matching with a future debug session. */
+    sessionName?: string;
+
+    /** Workspace folder associated with the debug session for better matching with a future debug session. */
+    wsFolder?: string; // Must be a Uri.toString() of an actual wsFolder for the session
+}
+
 export enum CmdType {
     GetDocuments = 'GetDocuments',
     GetMemory = 'GetMemory',
@@ -69,7 +105,7 @@ export interface ICmdSetByte extends ICmdBase {
 }
 
 export interface IMemValue {
-    changed?: boolean;      // Changed on reload (different from edited)
+    changed?: boolean; // Changed on reload (different from edited)
     cur: number;
     orig: number;
     stale: boolean;
@@ -103,8 +139,8 @@ export interface ICmdSettingsChanged extends ICmdBase {
 export type ModifiedXferMap = { [addr: string]: number };
 export interface IWebviewDocXfer {
     docId: string;
-    sessionId: string;          // The debug session ID, also the document Id
-    sessionName: string;        // The debug session name
+    sessionId: string; // The debug session ID, also the document Id
+    sessionName: string; // The debug session name
     displayName: string;
     expr: string;
     wsFolder: string;
@@ -124,7 +160,14 @@ export interface ICmdClientState extends ICmdBase {
     state: { [key: string]: any };
 }
 
-export type CmdButtonName = 'close' | 'new' | 'select' | 'refresh' | 'settings' | 'copy-all-to-clipboard' | 'copy-all-to-file';
+export type CmdButtonName =
+    | 'close'
+    | 'new'
+    | 'select'
+    | 'refresh'
+    | 'settings'
+    | 'copy-all-to-clipboard'
+    | 'copy-all-to-file';
 export interface ICmdButtonClick extends ICmdBase {
     button: CmdButtonName;
 }

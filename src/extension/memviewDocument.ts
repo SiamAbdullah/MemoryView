@@ -3,7 +3,7 @@ import querystring from 'node:querystring';
 import { uuid } from 'uuidv4';
 import * as fs from 'fs';
 import { DocDebuggerStatus, DualViewDoc } from './dualViewDoc';
-import { MemViewExtension, MemviewUriOptions } from '../extension';
+import { MemViewExtension } from '../extension';
 import {
     IWebviewDocXfer,
     ICmdGetMemory,
@@ -22,7 +22,8 @@ import {
     UnknownDocId,
     IModifiableProps,
     RowFormatType,
-    EndianType
+    EndianType,
+    MemviewUriOptions
 } from './shared';
 import { DebuggerTrackerLocal, ITrackedDebugSession } from './debugTracker';
 import { DebugProtocol } from '@vscode/debugprotocol';
