@@ -50,11 +50,60 @@
     ],
     "main": "./dist/extension.js",
     "contributes": {
+        "menus": {
+            "webview/context": [
+                {
+                    "command": "memoryview.1_byte_Int_View",
+                    "when": "memoryview:showMemoryPanel && webviewSection == memorywebview_panel",
+                    "group": "1_settings@1"
+                },
+                {
+                    "command": "memoryview.4_byte_Int_View",
+                    "when": "memoryview:showMemoryPanel && webviewSection == memorywebview_panel",
+                    "group": "1_settings@2"
+                },
+                {
+                    "command": "memoryview.8_byte_Int_View",
+                    "when": "memoryview:showMemoryPanel && webviewSection == memorywebview_panel",
+                    "group": "1_settings@3"
+                },
+                {
+                    "command": "memoryview.Little_Endian_View",
+                    "when": "memoryview:showMemoryPanel && webviewSection == memorywebview_panel",
+                    "group": "3_settings@1"
+                },
+                {
+                    "command": "memoryview.Big_Endian_View",
+                    "when": "memoryview:showMemoryPanel && webviewSection == memorywebview_panel",
+                    "group": "3_settings@2"
+                }
+            ]
+        },
         "commands": [
             {
-                "category": "MemoryView",
-                "command": "Debugger.memoryview.hello",
-                "title": "Testing: Force 'memoryview' extension to load"
+                "category": "MemoryView_RightClickContextMenu",
+                "command": "memoryview.1_byte_Int_View",
+                "title": "1-Byte Integer View"
+            },
+            {
+                "category": "MemoryView_RightClickContextMenu",
+                "command": "memoryview.4_byte_Int_View",
+                "title": "4-Bytes Integer View"
+            },
+            {
+                "category": "MemoryView_RightClickContextMenu",
+                "command": "memoryview.8_byte_Int_View",
+                "title": "8-Bytes Integer View"
+            },
+            {
+                "category": "MemoryView_RightClickContextMenu",
+                "command": "memoryview.Little_Endian_View",
+                "title": "Little Endian"
+            },
+            {
+                "category": "MemoryView_RightClickContextMenu",
+                "command": "memoryview.Big_Endian_View",
+                "title": "Big Endian"
             },
             {
                 "category": "MemoryView",
