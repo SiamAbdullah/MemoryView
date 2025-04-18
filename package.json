@@ -58,14 +58,29 @@
                     "group": "1_settings@1"
                 },
                 {
-                    "command": "memoryview.4_byte_Int_View",
+                    "command": "memoryview.2_byte_Int_View",
                     "when": "memoryview:showMemoryPanel && webviewSection == memorywebview_panel",
                     "group": "1_settings@2"
                 },
                 {
-                    "command": "memoryview.8_byte_Int_View",
+                    "command": "memoryview.4_byte_Int_View",
                     "when": "memoryview:showMemoryPanel && webviewSection == memorywebview_panel",
                     "group": "1_settings@3"
+                },
+                {
+                    "command": "memoryview.8_byte_Int_View",
+                    "when": "memoryview:showMemoryPanel && webviewSection == memorywebview_panel",
+                    "group": "1_settings@4"
+                },
+                {
+                    "command": "memoryview.4_byte_Float_View",
+                    "when": "memoryview:showMemoryPanel && webviewSection == memorywebview_panel",
+                    "group": "2_settings@1"
+                },
+                {
+                    "command": "memoryview.8_byte_Float_View",
+                    "when": "memoryview:showMemoryPanel && webviewSection == memorywebview_panel",
+                    "group": "2_settings@2"
                 },
                 {
                     "command": "memoryview.Little_Endian_View",
@@ -83,17 +98,32 @@
             {
                 "category": "MemoryView_RightClickContextMenu",
                 "command": "memoryview.1_byte_Int_View",
-                "title": "1-Byte Integer View"
+                "title": "1-Byte Integer"
+            },
+            {
+                "category": "MemoryView_RightClickContextMenu",
+                "command": "memoryview.2_byte_Int_View",
+                "title": "2-Byte Integer"
             },
             {
                 "category": "MemoryView_RightClickContextMenu",
                 "command": "memoryview.4_byte_Int_View",
-                "title": "4-Bytes Integer View"
+                "title": "4-Bytes Integer"
             },
             {
                 "category": "MemoryView_RightClickContextMenu",
                 "command": "memoryview.8_byte_Int_View",
-                "title": "8-Bytes Integer View"
+                "title": "8-Bytes Integer"
+            },
+            {
+                "category": "MemoryView_RightClickContextMenu",
+                "command": "memoryview.4_byte_Float_View",
+                "title": "32-bit Floating Point"
+            },
+            {
+                "category": "MemoryView_RightClickContextMenu",
+                "command": "memoryview.8_byte_Float_View",
+                "title": "64-bit Floating Point"
             },
             {
                 "category": "MemoryView_RightClickContextMenu",

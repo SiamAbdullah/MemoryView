@@ -10,8 +10,13 @@ const UriTestCommandName = 'Debugger.memoryview.uriTest';
 const AddMemViewPanelCommandName = 'Debugger.memoryview.addMemoryView';
 
 const OneByteIntMemoryViewPanelCommandName = 'memoryview.1_byte_Int_View';
+const TwoByteIntMemoryViewPanelCommandName = 'memoryview.2_byte_Int_View';
 const FourBytesIntMemoryViewPanelCommandName = 'memoryview.4_byte_Int_View';
 const EightBytesIntMemoryViewPanelCommandName = 'memoryview.8_byte_Int_View';
+
+const FourBytesFloatMemoryViewPanelCommandName='memoryview.4_byte_Float_View';
+const EightBytesFloatMemoryViewPanelCommandName='memoryview.8_byte_Float_View';
+
 const LittleEndianMemoryViewPanelCommandName = 'memoryview.Little_Endian_View';
 const BigEndianMemoryViewPanelCommandName = 'memoryview.Big_Endian_View';
 
@@ -62,11 +67,20 @@ function registerRightClickContextMenuCommands(
         vscode.commands.registerCommand(OneByteIntMemoryViewPanelCommandName, () => {
             updateRowFormatTypeSettings(memoryViewPanelProvider, '1-byte');
         }),
+        vscode.commands.registerCommand(TwoByteIntMemoryViewPanelCommandName, () => {
+            updateRowFormatTypeSettings(memoryViewPanelProvider, '2-byte');
+        }),
         vscode.commands.registerCommand(FourBytesIntMemoryViewPanelCommandName, () => {
             updateRowFormatTypeSettings(memoryViewPanelProvider, '4-byte');
         }),
         vscode.commands.registerCommand(EightBytesIntMemoryViewPanelCommandName, () => {
             updateRowFormatTypeSettings(memoryViewPanelProvider, '8-byte');
+        }),
+        vscode.commands.registerCommand(FourBytesFloatMemoryViewPanelCommandName, () => {
+            updateRowFormatTypeSettings(memoryViewPanelProvider, '4-byte-float');
+        }),
+        vscode.commands.registerCommand(EightBytesFloatMemoryViewPanelCommandName, () => {
+            updateRowFormatTypeSettings(memoryViewPanelProvider, '8-byte-float');
         }),
         vscode.commands.registerCommand(LittleEndianMemoryViewPanelCommandName, () => {
             updateEndianTypeSettings(memoryViewPanelProvider, 'little');
