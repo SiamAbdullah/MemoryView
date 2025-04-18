@@ -1,10 +1,16 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import * as React from 'react';
 import { DualViewDoc, DummyByte, IDualViewDocGlobalEventArg } from '../extension/dualViewDoc';
-import { IMemValue, UnknownDocId } from '../extension/shared';
+import {
+    IMemValue,
+    UnknownDocId,
+    BytesPerWordForFormatType,
+    FormatByteNumber,
+    RowFormatType
+} from '../extension/shared';
 import { hexFmt64, hexFmt64 as _hexFmt64 } from '../extension/utils';
 import { SelContext } from '../extension/selection';
-import { hexValuesLookup, IMemValue32or64 } from './shared';
+import { hexValuesLookup, IMemValue32or64, HexWordDataType, getFloat32AsString, getFloat64AsString } from './shared';
 import { HexCellChar, HexCellAddress, HexCellEmpty } from './hexCell';
 
 export type OnCellChangeFunc = (address: bigint, val: number) => void;
@@ -43,8 +49,17 @@ export class HexCellValue extends React.Component<IHexCell, IHexCellState> {
     classNames = () => {
         const byteInfo = this.props.cellInfo;
         const changed = byteInfo.orig !== byteInfo.cur || byteInfo.changed;
+        let cssClassType = this.props.bytesPerCell.toString();
+        const info = byteInfo as IMemValue32or64;
+        if (
+            this.props.bytesPerCell > 1 &&
+            (info.dataType == HexWordDataType.Float32 || info.dataType == HexWordDataType.Float64)
+        ) {
+            cssClassType = info.dataType.toString();
+        }
+
         return (
-            `hex-cell hex-cell-value hex-cell-value${this.props.bytesPerCell}` +
+            `hex-cell hex-cell-value hex-cell-value${cssClassType}` +
             (this.state.frozen ? ' hex-cell-value-dirty' : '') +
             (changed ? ' hex-cell-value-changed' : '') +
             (SelContext.isSelected(this.props.address) ? ' selected-cell' : '')
@@ -78,16 +93,34 @@ export class HexCellValue extends React.Component<IHexCell, IHexCellState> {
         return HexCellValue.formatValue(this.props.bytesPerCell === 1, this.props.cellInfo);
     };
 
+    public static getRenderedValue(info: IMemValue32or64): string {
+        if (info.invalid) {
+            return '~'.padStart(this.maxChars, '~');
+        } else if (info.dataType === HexWordDataType.Int16) {
+            return info.cur.toString(16).padStart(this.maxChars, '0');
+        } else if (info.dataType === HexWordDataType.Int32) {
+            return info.cur.toString(16).padStart(this.maxChars, '0');
+        } else if (info.dataType === HexWordDataType.Int64) {
+            return info.cur.toString(16).padStart(this.maxChars, '0');
+        } else if (info.dataType === HexWordDataType.Float32) {
+            // info.bufferCur always contains byte in little endian.
+            // if user select big endian from UI then info.bufferCur will already reversed byte, so we always use little endian true to get the float value.
+            return getFloat32AsString(info.bufferCur, true);
+        } else if (info.dataType === HexWordDataType.Float64) {
+            // info.bufferCur always contains byte in little endian.
+            // if user select big endian from UI then info.bufferCur will already reversed byte, so we always use little endian true to get the float value.
+            return getFloat64AsString(info.bufferCur, true);
+        }
+
+        return '~'.padStart(this.maxChars, '~');
+    }
+
     public static formatValue(isByte: boolean, cellInfo: CellInfoType): string {
         if (isByte) {
             return cellInfo.cur >= 0 ? hexValuesLookup[((cellInfo as IMemValue).cur >>> 0) & 0xff] : '~~';
         } else {
             const info = cellInfo as IMemValue32or64;
-            const value = info.cur;
-            const str = info.invalid
-                ? '~'.padStart(this.maxChars, '~')
-                : value.toString(16).padStart(this.maxChars, '0');
-            return str;
+            return HexCellValue.getRenderedValue(info);
         }
     }
 
@@ -265,15 +298,18 @@ export class HexDataRow extends React.Component<IHexDataRow, IHexDataRowState> {
     private onRowChangeFunc = this.rowChanged.bind(this);
     private mountStatus = false;
     private bytesInRow = 16;
-    private static bytePerWord: 1 | 4 | 8;
+    private static bytePerWord: FormatByteNumber;
+    private static format: RowFormatType;
+    private static wordDataType: HexWordDataType;
     private static byteOrder: number[] = [];
     private static isBigEndian = false;
     private myRef = React.createRef<HTMLDivElement>();
     constructor(public props: IHexDataRow) {
         super(props);
-        const fmt = DualViewDoc.currentDoc?.format;
         if (HexDataRow.byteOrder.length === 0) {
-            HexDataRow.bytePerWord = fmt === '1-byte' ? 1 : fmt === '4-byte' ? 4 : 8;
+            HexDataRow.format = DualViewDoc.currentDoc?.format ?? '1-byte';
+            HexDataRow.wordDataType = HexDataRow.getWordDataType(HexDataRow.format);
+            HexDataRow.bytePerWord = BytesPerWordForFormatType[HexDataRow.format];
             HexDataRow.isBigEndian = DualViewDoc.currentDoc?.endian === 'big';
             if (HexDataRow.isBigEndian) {
                 for (let ix = 0; ix < HexDataRow.bytePerWord; ix++) {
@@ -296,6 +332,25 @@ export class HexDataRow extends React.Component<IHexDataRow, IHexDataRowState> {
         };
     }
 
+    private static getWordDataType(format: RowFormatType): HexWordDataType {
+        switch (format) {
+            case '1-byte':
+                return HexWordDataType.Byte;
+            case '2-byte':
+                return HexWordDataType.Int16;
+            case '4-byte':
+                return HexWordDataType.Int32;
+            case '8-byte':
+                return HexWordDataType.Int64;
+            case '4-byte-float':
+                return HexWordDataType.Float32;
+            case '8-byte-float':
+                return HexWordDataType.Float64;
+        }
+
+        return HexWordDataType.Byte;
+    }
+
     private convertToWords(bytes: IMemValue[]): IMemValue32or64[] {
         const ret: IMemValue32or64[] = [];
         if (HexDataRow.bytePerWord === 1) {
@@ -308,6 +363,7 @@ export class HexDataRow extends React.Component<IHexDataRow, IHexDataRowState> {
             let invalid = false;
             let changed: boolean | undefined = false;
             let stale: boolean | undefined = false;
+            const bufferCur = new Uint8Array(HexDataRow.byteOrder.length);
             try {
                 for (const ix of HexDataRow.byteOrder) {
                     const byte = bytes[start + ix];
@@ -317,6 +373,7 @@ export class HexDataRow extends React.Component<IHexDataRow, IHexDataRowState> {
                     }
                     changed = changed || byte.changed;
                     stale = stale || byte.stale;
+                    bufferCur[ix] = byte.cur & 0xff;
                     if (HexDataRow.isBigEndian) {
                         curV = (curV << 8n) | BigInt(byte.cur & 0xff);
                         origV = (origV << 8n) | BigInt(byte.orig & 0xff);
@@ -325,15 +382,22 @@ export class HexDataRow extends React.Component<IHexDataRow, IHexDataRowState> {
                         origV = (origV << 8n) | BigInt(byte.orig & 0xff);
                     }
                 }
+
+                // reverse the bytes if it is big endian
+                if (HexDataRow.isBigEndian) {
+                    bufferCur.reverse();
+                }
             } catch (e) {
                 console.log(e);
             }
             ret.push({
                 cur: curV,
                 orig: origV,
+                bufferCur,
                 changed: !!changed,
                 stale: !!changed,
-                invalid: invalid
+                invalid: invalid,
+                dataType: HexDataRow.wordDataType
             });
         }
         return ret;
