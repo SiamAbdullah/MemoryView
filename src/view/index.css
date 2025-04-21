@@ -56,11 +56,23 @@ body {
     width: 3ch;
 }
 
+.hex-cell-value2 {
+    width: 6ch;
+}
+
 .hex-cell-value4 {
     width: 10ch;
 }
 
 .hex-cell-value8 {
+    width: 18ch;
+}
+
+.hex-cell-valueFloat32 {
+    width: 15ch;
+}
+
+.hex-cell-valueFloat64 {
     width: 18ch;
 }
 
@@ -218,7 +230,6 @@ body {
     margin-right: 1ch;
 }
 
-	
 .tooltip {
     background: var(--vscode-textBlockQuote-background);
     font-family: var(--vscode-editor-font-family);
@@ -231,4 +242,4 @@ body {
     left: 100px;
     top: -20px;
     z-index: 100;
-  }
+}

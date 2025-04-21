@@ -112,8 +112,18 @@ export interface IMemValue {
     inRange: boolean;
 }
 
-export type RowFormatType = '1-byte' | '4-byte' | '8-byte';
+export type RowFormatType = '1-byte'| '2-byte' | '4-byte' | '8-byte' | '4-byte-float' | '8-byte-float';
 export type EndianType = 'little' | 'big';
+export type FormatByteNumber = 1 | 2 | 4 | 8;
+
+export const BytesPerWordForFormatType: Record<string, FormatByteNumber> = {
+  '1-byte': 1,
+  '2-byte': 2,
+  '4-byte': 4,
+  '8-byte': 8,
+  '4-byte-float': 4,
+  '8-byte-float': 8,
+};
 
 export interface IModifiableProps {
     expr: string;
