@@ -4,7 +4,7 @@
     "preview": true,
     "description": "Provide memory views for debuggers",
     "version": "1.0.1",
-    "publisher": "ByteSchool",
+    "publisher": "Debugger",
     "repository": {
         "type": "git",
         "url": "https://github.com/SiamAbdullah/MemoryView"
