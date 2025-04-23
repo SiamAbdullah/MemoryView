@@ -1,62 +1,76 @@
-# MemoryView
+# MemoryView Extension Overview
 
-MemoryView extension was originally conceived as part of the Cortex-Debug extension.Then it was [created](https://github.com/mcu-debug/memview) it a stand-alone extension so it can be useful for other debuggers. I forked the repo and added other C/C++ debugger support with more functionality in the MemoryView.
+The MemoryView extension was originally conceived as part of the Cortex-Debug extension. Then it was [developed](https://github.com/mcu-debug/memview) as a stand-alone extension so it could be useful for other debuggers. I forked the repository and added support for other C/C++ debuggers, along with more functionality, to the MemoryView.
 
-https://marketplace.visualstudio.com/items?itemName=Debugger.memoryview is available. Please read the following first though.
+You can find it on the Visual Studio Marketplace: [MemoryView](https://marketplace.visualstudio.com/items?itemName=Debugger.memoryview). Please read the following first:
 
-This is a memory viewer extension specially built to work with debuggers. It can be used with any debugger that supports memory reads (and optional writes). Currently `cppvsdbg`,`cppdbg`, `lldb-dap`, `cortex-debug` and `cspy` are the debuggers supported. This extension is more suitable for low level, mid level or embedded developers. The debugger has to support the [Debug Adapter Protocol](https://microsoft.github.io/debug-adapter-protocol/). This protocol specifies how to format/make requests and responses. However it does not say what happens when a request fails so there may be issues in failure conditions -- we try our best to recover.
+This is a memory viewer extension specially designed to work with debuggers. It can be used with any debugger that supports memory reads (and optional writes). Currently, `cppvsdbg`, `cppdbg`, `lldb-dap`, `cortex-debug`, and `cspy` are the supported debuggers. This extension is particularly suitable for low-level, mid-level, or embedded developers. The debugger must support the [Debug Adapter Protocol](https://microsoft.github.io/debug-adapter-protocol/).
 
-![screenshot](./resources/screenshot.png)
+![Screenshot](./resources/memoryview.png)
 
-VSCode provides a mechanism to launch a memory visualizer for certain types of items in Variables and Watch. Generally most C/C++ debuggers provide a memory-reference for pointers. By default, VSCode uses its own `HexEditor`. If you hover on items that are pointers, you will see a special button to launch the `HexEditor`. There is no user setting to change which editor/visualizer to use. It is hardcoded. As a temporary (and experimental) workaround, we can duplicate the `HexEditor` view to one of our memory windows. We can do this silently or with a prompt (default). We can optionally (default false) also close the `HexEditor` for you. Please review the memoryview Tracking settings in VSCode Settings. Give us feedback if you find this as annoying, helpful, issues, etc. Please refer to https://github.com/Debugger/memview/issues/25
+VSCode provides a mechanism to launch a memory visualizer for certain types of items in Variables and Watch. Generally, most C/C++ debuggers provide a memory reference for pointers. By default, VSCode uses its own `HexEditor`. If you hover over items that are pointers, you will see a special button to launch the `HexEditor`. There is no user setting to change which editor/visualizer to use; it is hardcoded in the VSCode platform. We are working on a change to support this in a limited scope by replacing the `HexEditor` with the `MemoryView` extension (coming soon...).
+
+---
 
 ## Features
 
-This was originally conceived as part of the [Cortex-Debug](https://github.com/Marus/cortex-debug) extension. But I decided to make it a stand-alone extension so it can be useful for other debuggers.
+This extension was originally part of the [Cortex-Debug](https://github.com/Marus/cortex-debug) extension, but it was later made stand-alone to benefit other debuggers.
 
--   Infinite scroll capable. Currently, artificially limited to 4MB and this may change.
-    -   Very little data is fetched depending on what is being viewed and more is loaded as you scroll.
--   1/2/4/8 byte Integer and 4/8 byte Float views. Decoded bytes are only shown in 1-byte mode. Saving to clipboard/file is always done in 1-byte more
--   Persistent views that survive multiple debug sessions and VSCode restarts.
--   One panel hosts multiple views that you can switch between. This was a deliberate choice.
--   Separate views can interfere with the performance of the debug session single stepping because of too much traffic
--   One click copy memory address in the address panel.
--   Coming soon: Paste. Selection and copy to clipboard already available.
--   Coming soon: memory editing. You can edit now but there is capability to commit changes to program memory.
--   Coming soon: Ability to host the window either in the 'Panel' area (alongside Debug Console) or in the editor area.
--   Coming soon: We have an issue pending with VSCode for the ability to launch the memory viewer from withing the Variable/Watch Windows. We are working to support it in limited scope.
+-   **Infinite scrolling**: Currently, artificially limited to 4MB (this limit may change).
+    -   Very little data is fetched initially, with more loaded as you scroll.
+-   **Multiple data views**: Supports 1/2/4/8-byte integers and 4/8-byte floats. Decoded bytes are only shown in 1-byte mode. Saving to clipboard/files always uses 1-byte mode.
+-   **Persistent views**: Survive across multiple debug sessions and VSCode restarts.
+-   **Single-panel hosting**: A deliberate design choice to house multiple views in one panel for ease of use.
+    -   Note: Separate views can interfere with debugging performance due to excessive traffic during single-stepping.
+-   **Quick memory copying**: One-click to copy memory addresses from the address panel.
+-   **Upcoming features**:
+    -   Paste functionality (selection and copy to clipboard are already available).
+    -   Memory editing with the capability to commit changes to program memory.
+    -   Option to host the window in either the 'Panel' area (alongside Debug Console) or the editor area.
+    -   The ability to launch the memory viewer from within the Variables/Watch windows (requires cooperation from the VSCode team, but workarounds are in progress).
 
-Right click context menu to switch different views <br>
-<img src="./resources/rightclickcontext.png" width="800" height="300" >
+#### Right-click the context menu to switch between views :<br/>
 
-Following customizations exist for a memory view<br>
+<img src="./resources/rightclickcontext.png" width="800" height="300">
+
+#### Below are the available customizations for a memory view:<br/>
+
 <img src="./resources/vew-props.png" width="400">
 
-We would like to eventually launch memory views from the Variables and Watch windows. But this will require some cooperation from core VSCode but I have found a hack which will enable us to open it from Variables and Editor window.
+---
 
 ## Usage (Manually within VSCode)
 
--   Use the Command Palette and select `MemoryView: Add new memory view...` while a debug session is paused.
--   It will ask you for an address or a C-style expression that can be interpreted by the debugger (GDB or other) to return an address. In expressions, try to use global variables or else things might not work when we try to refresh the view
--   When successfully attached, a `MEMORY` tab will appear in the Panel area
--   All memory requests are aligned to a 16 byte boundary. Memory is fetched and rendered in 512B chunks as needed. May change in the future
--   NOTE: Editing features are not yet ready for use. You can edit but the edits will not be saved to your program
+1. Use the Command Palette and select `MemoryView: Add new memory view...` while a debug session is paused.
+2. Enter an address or a C-style expression that the debugger can interpret (e.g., GDB) to return an address. Expressions should use global variables to ensure proper functionality during view refreshes.
+3. Once successfully attached, a `MEMORY` tab will appear in the Panel area.
+4. Memory requests are aligned to a 16-byte boundary. Data is fetched and rendered in 512-byte chunks as needed (subject to future changes).
 
-Your views are preserved across restarts of VSCode window. They are saved on a workspace basis. We have three states for a memory view
+**Note**: Editing features are not yet available. You can make edits, but they won’t be saved to your program.
 
--   `Orphaned`: Not connected to a debugger and will display the last seen values if they were ever extracted. Every time a new debug session starts (of the supported debuggers), we try to see if an orphaned memory view can be re-attached to the session. You will see an indication of that in the toolbar.
--   `Busy`: Attached to the debugger but the program is busy. While it is busy, no updates to memory views can happen, while it is possible to read memory while the program is running, most gdb based debuggers do not allow this and we don't know which debuggers are capable of that.
--   **`Paused`**: The program is in paused state and we are ready to update memory. A refresh is automatically done for visible areas and more data is fetched as needed. When a refresh occurs and there is previous data available, changed areas are marked as seen in the screenshot above
+Memory views are preserved across VSCode restarts and stored on a per-workspace basis. There are three states for memory views:
 
-## Usage (Manually from a browser)
+-   **Orphaned**: Not connected to a debugger. Displays the last seen values (if available). When a new debug session starts with a supported debugger, orphaned views attempt to reattach automatically, with an indicator shown in the toolbar.
+-   **Busy**: Attached to the debugger, but the program is running. Updates to memory views cannot occur in this state. Although it is technically possible to read memory while running, most GDB-based debuggers do not support this.
+-   **Paused**: The program is paused, allowing memory updates. Visible areas refresh automatically, with additional data fetched as required. Any previous data changes are marked for reference.
 
-You can enter URL that of the form vscode://mch-debug.memoryview/ADDRESS-OR-EXPRESSION to open a new view (best done when the debugger is in paused state). For instance entering vscode://Debugger.memoryview/0x20000670 will open a view for address 0x20000670. All the options mentioned in the section below also apply
+---
 
-## Usage (programmatically by another extension)
+## Usage (Manually from a Browser)
 
--   We can provide an API and it is planned and we will implement as soon as there is some extension that needs it.
--   Any extension can create a memory view using the VSCode API to open a URI. The first extension to use it will probably be Cortex-Debug and this will be refined as needed
--   Please don't use this in production yet until the API is deemed ready. Feel free to experiment.
+Enter a URL in the format `vscode://mch-debug.memoryview/ADDRESS-OR-EXPRESSION` to open a new view (best done when the debugger is paused). For example:
+`vscode://Debugger.memoryview/0x20000670`
+This will open a view for address `0x20000670`. All previously mentioned options apply here as well.
+
+---
+
+## Usage (Programmatically by Another Extension)
+
+-   We plan to provide an API for other extensions, which will be implemented as soon as required.
+-   Any extension can create a memory view using the VSCode API to open a URI. The first extension to use it will likely be Cortex-Debug.
+-   Please avoid using this in production until the API is finalized. Feel free to experiment.
+
+---
 
 ```typescript
 const options: MemviewUriOptions = {
