@@ -1,10 +1,10 @@
-# memview
+# MemoryView
 
-https://marketplace.visualstudio.com/items?itemName=Debugger.memoryview is available as a preview. Please read the following first though.
+MemoryView extension was originally conceived as part of the Cortex-Debug extension.Then it was [created](https://github.com/mcu-debug/memview) it a stand-alone extension so it can be useful for other debuggers. I forked the repo and added other C/C++ debugger support with more functionality in the MemoryView.
 
-This is a memory viewer extension specially built to work with debuggers. It can be used with any debugger that supports memory reads (and optional writes). Currently `cppdbg`, `cortex-debug` and `cspy` are the debuggers supported but you can add your own by editing the extension settings. This extension is more suitable for low level programmers or embedded developers. The debugger has to support the [Debug Adapter Protocol](https://microsoft.github.io/debug-adapter-protocol/). This protocol specifies how to format/make requests and responses. However it does not say what happens when a request fails so there may be issues in failure conditions -- we try our best to recover.
+https://marketplace.visualstudio.com/items?itemName=Debugger.memoryview is available. Please read the following first though.
 
-Our goal is to provide a good memory viewer, editing memory is lower in priority. For editing, we have not decided on what the usage paradigm is and how to do error recovery.
+This is a memory viewer extension specially built to work with debuggers. It can be used with any debugger that supports memory reads (and optional writes). Currently `cppvsdbg`,`cppdbg`, `lldb-dap`, `cortex-debug` and `cspy` are the debuggers supported. This extension is more suitable for low level, mid level or embedded developers. The debugger has to support the [Debug Adapter Protocol](https://microsoft.github.io/debug-adapter-protocol/). This protocol specifies how to format/make requests and responses. However it does not say what happens when a request fails so there may be issues in failure conditions -- we try our best to recover.
 
 ![screenshot](./resources/screenshot.png)
 
@@ -12,24 +12,27 @@ VSCode provides a mechanism to launch a memory visualizer for certain types of i
 
 ## Features
 
-This was originally conceived as part of the [Cortex-Debug](https://github.com/Marus/cortex-debug) extension. But I decided to make it a stand-alone extension so it can be useful for other debuggers. The design thoughts and goals are [documented here](https://github.com/Marus/cortex-debug/wiki/memoryviewer)
+This was originally conceived as part of the [Cortex-Debug](https://github.com/Marus/cortex-debug) extension. But I decided to make it a stand-alone extension so it can be useful for other debuggers.
 
 -   Infinite scroll capable. Currently, artificially limited to 4MB and this may change.
     -   Very little data is fetched depending on what is being viewed and more is loaded as you scroll.
--   1/4/8 byte views. Decoded bytes are only shown in 1-byte mode. Saving to clipboard/file is always done in 1-byte more
+-   1/2/4/8 byte Integer and 4/8 byte Float views. Decoded bytes are only shown in 1-byte mode. Saving to clipboard/file is always done in 1-byte more
 -   Persistent views that survive multiple debug sessions and VSCode restarts.
--   Visually tell which bytes were modified since last 'resume' of a program. Changed cells (byte, word or double-word) are highlighted.
 -   One panel hosts multiple views that you can switch between. This was a deliberate choice.
 -   Separate views can interfere with the performance of the debug session single stepping because of too much traffic
+-   One click copy memory address in the address panel.
 -   Coming soon: Paste. Selection and copy to clipboard already available.
 -   Coming soon: memory editing. You can edit now but there is capability to commit changes to program memory.
 -   Coming soon: Ability to host the window either in the 'Panel' area (alongside Debug Console) or in the editor area.
--   Coming soon: We have an issue pending with VSCode for the ability to launch the memory viewer from withing the Variable/Watch Windows. See https://github.com/microsoft/vscode/issues/155597 and **submit your vote**.
+-   Coming soon: We have an issue pending with VSCode for the ability to launch the memory viewer from withing the Variable/Watch Windows. We are working to support it in limited scope.
+
+Right click context menu to switch different views <br>
+<img src="./resources/rightclickcontext.png" width="800" height="300" >
 
 Following customizations exist for a memory view<br>
 <img src="./resources/vew-props.png" width="400">
 
-We would like to eventually launch memory views from the Variables and Watch windows. But this will require some cooperation from core VSCode.
+We would like to eventually launch memory views from the Variables and Watch windows. But this will require some cooperation from core VSCode but I have found a hack which will enable us to open it from Variables and Editor window.
 
 ## Usage (Manually within VSCode)
 
